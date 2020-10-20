@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+{% extends 'home/base.html' %}
+{% block content %}
+    {% if profile_info.id != user.id %}
+        <h1>{{ profile_info.last_name }} {{ profile_info.first_name }} {{ profile_info.patronymic }}</h1>
+    {% else %}
+        <h1>My profile</h1>
+    {% endif %}
+    <form method="get">{% csrf_token %}
+        <table>
+            <tr>
+                <td>П.І.Б.:</td>
+                <td> {{ profile_info.last_name }} {{ profile_info.first_name }} {{ profile_info.patronymic }}</td>
+            </tr>
+            <tr>
+                <td>День народження:</td>
+                <td> {{ profile_info.date_of_birth }} </td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td> {{ profile_info.email }} </td>
+            </tr>
+            <tr>
+                <td>Департамент:</td>
+                <td> {{ profile_info.department_user }} </td>
+            </tr>
+            <tr>
+                <td>Відділ:</td>
+                <td> {{ profile_info.division_user }} </td>
+            </tr>
+            <tr>
+                <td>Посада:</td>
+                <td> {{ profile_info.position }} </td>
+            </tr>
+            <tr>
+                <td>Номер телефона (Короткий):</td>
+                <td> {{ profile_info.tel_number }} ({{ profile_info.short_tel_number }})</td>
+            </tr>
+            {% if profile_info.id == user.id or user.is_superuser %}
+                <tr>
+                    <td>Інвентар:</td>
+                    <td>
+                        {% if profile_info.device_set.all %}
+                            {% for inv in profile_info.device_set.all %}
+                                <a href="{% url 'inventory:device' inv.id %}">{{ inv.inv_num }}</a>
+                            {% endfor %}
+                        {% else %}
+                            No items
+                        {% endif %}
+                        {% if user.is_superuser %}
+                            <a href="{% url 'inventory:create_device' %}">Add</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+    </form>
+    {% if user.is_superuser %}
+        <a href="{% url 'users:edit_profile' profile_info.pk %}">Edit</a>
+    {% endif %}
+    <a href="{% url 'home:index' %}">Back</a>
+{% endblock content %}
+</body>
+</html>

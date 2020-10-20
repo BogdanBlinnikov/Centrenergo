@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Title</title>
+    <style>
+        .buttons {
+            margin-bottom: 0.5rem;
+            background-color: #343a40; /* Green */
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        #submit, #submit_filter{
+            margin-bottom: 0.5rem;
+            background-color: #343a40;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+{% extends 'home/base.html' %}
+{% load static %}
+{% block content %}
+
+<body>
+{#    <link rel="stylesheet" href="{% static "inventory/signin.css" %}" type="text/css" media="screen">#}
+    <p></p>
+    <img src="{% static 'inventory/' %}{{device.inv_num}}.svg" alt="{{ device.inv_num }}">
+    <table>
+        <tr>
+            <td>Інвентарний номер:</td>
+            <td><b>{{ device.inv_num }}</b></td>
+        </tr>
+        <tr>
+            <td>Закріплений за:</td>
+            <td><b>{{ device.user }}</b></td>
+        </tr>
+        <tr>
+            <td>Тип пристрою:</td>
+            <td> {{ device.type }}</td>
+        </tr>
+        {% if device.type == 'Computer' %}
+            <tr>
+                <td>Материнська плата:</td>
+                <td> {{ device_chars.motherboard }}</td>
+            </tr>
+            <tr>
+                <td>Процесор:</td>
+                <td> {{ device_chars.processor }}</td>
+            </tr>
+            <tr>
+                <td>ОЗП:</td>
+                <td>{{ device_chars.ram_size }} Gb / {{ device_chars.ram_type }} </td>
+            </tr>
+            <tr>
+                <td>HDD/SSD:</td>
+                <td> {{ device_chars.disk_space }}</td>
+            </tr>
+            <tr>
+                <td>Windows:</td>
+                <td> {{ device_chars.windows }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td>Марка:</td>
+                <td> {{ device_chars.brand_name }}</td>
+            </tr>
+            <tr>
+                <td>Модель:</td>
+                <td> {{ device_chars.model_name }}</td>
+            </tr>
+            {% if device.type == 'Monitor' %}
+                <tr>
+                    <td>Діагональ:</td>
+                    <td> {{ device_chars.diagonal }}</td>
+                </tr>
+            {% elif device.type == 'Printer' %}
+                <tr>
+                    <td>Кольоровий:</td>
+                    <td> {% if device_chars.colour %} Єs {% else %} Нема {% endif %}</td>
+                </tr>
+                <tr>
+                    <td>A3:</td>
+                    <td> {% if device_chars.a3_tray %} Є {% else %} Нема {% endif %}</td>
+                </tr>
+            {% endif %}
+        {% endif %}
+    </table>
+    <p></p>
+    {% if user.is_superuser %}
+        <form action="{% url 'inventory:edit_device' device.id%}">
+            <button class="buttons" type="submit">Редагувати</button>
+        </form>
+        <form action="{% url 'inventory:delete_device' device.id%}">
+            <button class="buttons" type="submit">Видалити</button>
+        </form>
+    {% endif %}
+{% endblock content %}
+</body>
+</html>

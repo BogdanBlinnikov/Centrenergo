@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create device</title>
+</head>
+<body>
+{% extends 'home/base.html' %}
+{% block content %}
+    <h1>Create device</h1>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        {% for formset in inlines %}
+            {{ formset.as_p }}
+        {% endfor %}
+        <input type="submit" value="Save">
+    </form>
+
+    <a href="{% url 'inventory:index' %}">Back</a>
+{% endblock content %}
+</body>
+</html>

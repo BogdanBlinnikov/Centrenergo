@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+        .buttons {
+            margin-bottom: 0.5rem;
+            background-color: #343a40; /* Green */
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        #submit, #submit_filter{
+            margin-bottom: 0.5rem;
+            background-color: #343a40;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+{% extends 'home/base.html' %}
+{% block content %}
+    <h1>Registration</h1>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input id="submit" type="submit" value="Save">
+    </form>
+
+    <form action="{% url 'home:index' %}">
+        <button class="buttons" type="submit">Назад</button>
+    </form>
+{% endblock content %}
+</body>
+</html>

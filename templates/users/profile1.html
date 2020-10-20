@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+{% extends 'home/base.html' %}
+{% block content %}
+    {% if profile_info.id != user.id %}
+        <h1>{{ profile_info.last_name }} {{ profile_info.first_name }} {{ profile_info.patronymic }}</h1>
+    {% else %}
+        <h1>My profile</h1>
+    {% endif %}
+        <form method="get">{% csrf_token %}
+            <p>П.І.Б.: {{ profile_info.last_name }} {{ profile_info.first_name }} {{ profile_info.patronymic }}</p>
+            <p>День народження: {{ profile_info.date_of_birth }} </p>
+            <p>Департамент: {{ profile_info.department }} </p>
+            <p>Должность: {{ profile_info.position }} </p>
+            <p>Номер телефона (Короткий): {{ profile_info.tel_number }} ({{ profile_info.short_tel_number }})</p>
+            <p>Инвентарь:
+            {% if profile_info.device_set.all %}
+                {% for inv in profile_info.device_set.all %}
+                    <a href="{% url 'inventory:device' inv.id %}">{{ inv.inv_num }}</a>
+                {% endfor %}
+            {% else %}
+                No items
+            {% endif %}
+            {% if user.is_superuser %}
+                <a href="{% url 'inventory:create_device' %}">Add</a>
+            {% endif %}
+            </p>
+        </form>
+        {% if user.is_superuser %}
+            <a href="{% url 'users:edit_profile' profile_info.pk %}">Edit</a>
+        {% endif %}
+        <a href="{% url 'home:index' %}">Back</a>
+{% endblock content %}
+</body>
+</html>

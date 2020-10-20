@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit profile</title>
+</head>
+<body>
+{% extends 'home/base.html' %}
+{% block content %}
+    <h1>Edit profile</h1>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Save">
+    </form>
+
+    <a href="{% url 'users:profile' user.id %}">Back</a>
+{% endblock content %}
+</body>
+</html>

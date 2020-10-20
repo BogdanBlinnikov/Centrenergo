@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profiles list</title>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        tr:nth-child(even), thead {
+            background-color: #dddddd;
+        }
+
+        #submit_filter {
+            margin-bottom: 0.5rem;
+            background-color: #343a40; /* Green */
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .pagination {
+            display: inline-block;
+        }
+
+        .pagination a {
+            color: white;
+            float: left;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .current.page {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            padding: 8px;
+            background-color: #e9ecef;
+            color: black;
+            border-radius: 5px;
+            margin: 0.2rem;
+        }
+
+        .page {
+            background-color: #343a40;
+            color: white;
+            border-radius: 5px;
+            margin: 0.2rem;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+
+        .prev{
+            background-color: #343a40;
+            color: white;
+            border-radius: 5px;
+            margin: 0.2rem;
+        }
+        .next{
+            background-color: #343a40;
+            color: white;
+            border-radius: 5px;
+            margin: 0.2rem;
+        }
+
+    </style>
+</head>
+{% extends 'home/base.html' %}
+{% load static %}
+{% block content %}
+    <body>
+    {% load pagination_tags %}
+    {#    {% if profiles_list %}#}
+    {#        <table>#}
+    {#        {% for user in profiles_list %}#}
+    {#            <tr>#}
+    {#                <td><a href="{% url 'users:profile' user.pk %}">#}
+    {#                {{ user.last_name }} {{ user.first_name }} {{ user.patronymic}}</a></td>#}
+    {#                <td>{{ user.tel_number }}</td><td> {{ user.short_tel_number }}</td>#}
+    {#            </tr>#}
+    {#        {% endfor %}#}
+    {#        {% if birthdays_today %}#}
+    {#            {% for birthday in birthdays_today %}#}
+    {#                <h3>Сьогодні день народження {{ birthday.last_name }}</h3>#}
+    {#            {% endfor %}#}
+    {#        {% endif %}#}
+    {#        </table>#}
+    {#    {% endif %}#}
+    <form method="get">
+        <h4>Фільтрувати за:</h4>
+        {{ filter.form.as_p }}
+        <input id="submit_filter" type="submit" value="Ok"/>
+    </form>
+    {% autopaginate filter.qs 10 as filter_list %}
+    <table id="users">
+        <tr>
+            <th onclick="sortTable(0)"><b>П.І.Б.</b></th>
+            <th colspan="2"><b>Телефон</b></th>
+            <th><b>Email</b></th>
+        </tr>
+        {% for user in filter_list %}
+            <tr>
+                {% if user.position == 'Начальник департаменту' or user.position == 'Начальник відділу' %}
+                    <td><b><a href="{% url 'users:profile' user.pk %}">
+                        {{ user.last_name }} {{ user.first_name }} {{ user.patronymic }}</a></b></td>
+                    <td>{{ user.tel_number }}</td>
+                    <td> {{ user.short_tel_number }}</td>
+                    <td>{{ user.email }}</td>
+                {% else %}
+                    <td><a href="{% url 'users:profile' user.pk %}">
+                        {{ user.last_name }} {{ user.first_name }} {{ user.patronymic }}</a></td>
+                    <td>{{ user.tel_number }}</td>
+                    <td> {{ user.short_tel_number }}</td>
+                    <td>{{ user.email }}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        {#    <div class="pagination">#}
+        {#    <span class="step-links">#}
+        {#        {% if page_obj.has_previous %}#}
+        {#            <a href="?page=1">&laquo; first</a>#}
+        {#            <a href="?page={{ page_obj.previous_page_number }}">previous</a>#}
+        {#        {% endif %}#}
+        {##}
+        {#        <span class="current">#}
+        {#            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.#}
+        {#        </span>#}
+        {##}
+        {#        {% if page_obj.has_next %}#}
+        {#            <a href="?page={{ page_obj.next_page_number }}">next</a>#}
+        {#            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>#}
+        {#        {% endif %}#}
+        {#    </span>#}
+        {#</div>#}
+    </table>
+    <script>
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("users");
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            /* Make a loop that will continue until
+            no switching has been done: */
+            while (switching) {
+                // Start by saying: no switching is done:
+                switching = false;
+                rows = table.rows;
+                /* Loop through all table rows (except the
+                first, which contains table headers): */
+                for (i = 1; i < (rows.length - 1); i++) {
+                    // Start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /* Get the two elements you want to compare,
+                    one from current row and one from the next: */
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    /* Check if the two rows should switch place,
+                    based on the direction, asc or desc: */
+                    if (dir === "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            // If so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir === "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            // If so, mark as a switch and break the loop:
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /* If a switch has been marked, make the switch
+                    and mark that a switch has been done: */
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    // Each time a switch is done, increase this count by 1:
+                    switchcount++;
+                } else {
+                    /* If no switching has been done AND the direction is "asc",
+                    set the direction to "desc" and run the while loop again. */
+                    if (switchcount === 0 && dir === "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
+
+    {% paginate %}
+{% endblock content %}
+
+
+</body>
+</html>
